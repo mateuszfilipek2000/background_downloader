@@ -7,6 +7,7 @@ import 'dart:math';
 import 'package:async/async.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -33,7 +34,9 @@ final class DesktopDownloader extends BaseDownloader {
   final _resume = <Task>{};
   final _isolateSendPorts =
       <Task, SendPort?>{}; // isolate SendPort for running task
-  static final httpClient = http.Client();
+  static http.Client? _client;
+  static http.Client get httpClient => _client ??= IOClient(
+      HttpClient()..badCertificateCallback = (cert, host, port) => true);
 
   factory DesktopDownloader() => _singleton;
 
